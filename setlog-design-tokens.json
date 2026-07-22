@@ -1,0 +1,504 @@
+{
+  "global": {
+    "black": {
+      "value": "#000000",
+      "type": "color"
+    },
+    "white": {
+      "value": "#FFFFFF",
+      "type": "color"
+    },
+    "gray100": {
+      "value": "#F3F4F6",
+      "type": "color"
+    },
+    "gray200": {
+      "value": "#E5E7EB",
+      "type": "color"
+    },
+    "gray300": {
+      "value": "#D1D5DB",
+      "type": "color"
+    },
+    "gray400": {
+      "value": "#9CA3AF",
+      "type": "color"
+    },
+    "gray500": {
+      "value": "#6B7280",
+      "type": "color"
+    },
+    "gray700": {
+      "value": "#374151",
+      "type": "color"
+    },
+    "gray800": {
+      "value": "#1F2937",
+      "type": "color"
+    },
+    "gray900": {
+      "value": "#111827",
+      "type": "color"
+    },
+    "dim60": {
+      "value": "rgba(0,0,0,0.60)",
+      "type": "color"
+    },
+    "white15": {
+      "value": "rgba(255,255,255,0.15)",
+      "type": "color"
+    },
+    "white80": {
+      "value": "rgba(255,255,255,0.80)",
+      "type": "color"
+    },
+    "transparent": {
+      "value": "transparent",
+      "type": "color"
+    },
+    "radius4": {
+      "value": "4",
+      "type": "borderRadius"
+    },
+    "radius8": {
+      "value": "8",
+      "type": "borderRadius"
+    },
+    "radius16": {
+      "value": "16",
+      "type": "borderRadius"
+    },
+    "radius20": {
+      "value": "20",
+      "type": "borderRadius"
+    },
+    "sp4": {
+      "value": "4",
+      "type": "spacing"
+    },
+    "sp6": {
+      "value": "6",
+      "type": "spacing"
+    },
+    "sp8": {
+      "value": "8",
+      "type": "spacing"
+    },
+    "sp12": {
+      "value": "12",
+      "type": "spacing"
+    },
+    "sp16": {
+      "value": "16",
+      "type": "spacing"
+    },
+    "sp20": {
+      "value": "20",
+      "type": "spacing"
+    },
+    "sp24": {
+      "value": "24",
+      "type": "spacing"
+    },
+    "fs11": {
+      "value": "11",
+      "type": "fontSizes"
+    },
+    "fs12": {
+      "value": "12",
+      "type": "fontSizes"
+    },
+    "fs14": {
+      "value": "14",
+      "type": "fontSizes"
+    },
+    "fs16": {
+      "value": "16",
+      "type": "fontSizes"
+    },
+    "fs20": {
+      "value": "20",
+      "type": "fontSizes"
+    },
+    "fs24": {
+      "value": "24",
+      "type": "fontSizes"
+    },
+    "border1": {
+      "value": "1",
+      "type": "borderWidth"
+    },
+    "size16": {
+      "value": "16",
+      "type": "sizing"
+    },
+    "size20": {
+      "value": "20",
+      "type": "sizing"
+    },
+    "size36": {
+      "value": "36",
+      "type": "sizing"
+    },
+    "size44": {
+      "value": "44",
+      "type": "sizing"
+    },
+    "size49": {
+      "value": "49",
+      "type": "sizing"
+    },
+    "size56": {
+      "value": "56",
+      "type": "sizing"
+    },
+    "size64": {
+      "value": "64",
+      "type": "sizing"
+    },
+    "opacity30": {
+      "value": "0.3",
+      "type": "opacity"
+    },
+    "opacity15": {
+      "value": "0.15",
+      "type": "opacity"
+    },
+    "accent": {
+      "value": "#B5EAD7",
+      "type": "color"
+    },
+    "green": {
+      "value": "#34C759",
+      "type": "color"
+    },
+    "red": {
+      "value": "#FF3B30",
+      "type": "color"
+    },
+    "beamCyan": {
+      "value": "#7DE8FF",
+      "type": "color"
+    },
+    "beamPink": {
+      "value": "#FF9EE8",
+      "type": "color"
+    },
+    "dur16": {
+      "value": "16",
+      "type": "other"
+    },
+    "dur50": {
+      "value": "50",
+      "type": "other"
+    },
+    "dur150": {
+      "value": "150",
+      "type": "other"
+    },
+    "dur300": {
+      "value": "300",
+      "type": "other"
+    }
+  },
+  "semantic": {
+    "bgWaiting": {
+      "value": "{global.gray800}",
+      "type": "color"
+    },
+    "bgModalDim": {
+      "value": "{global.dim60}",
+      "type": "color"
+    },
+    "bgModalCard": {
+      "value": "{global.white}",
+      "type": "color"
+    },
+    "bgTabBar": {
+      "value": "{global.gray900}",
+      "type": "color"
+    },
+    "bgNoiseOverlay": {
+      "value": "{global.opacity15}",
+      "type": "opacity"
+    },
+    "emojiBarBg": {
+      "value": "{global.white15}",
+      "type": "color"
+    },
+    "textPrimary": {
+      "value": "{global.gray900}",
+      "type": "color"
+    },
+    "textSecondary": {
+      "value": "{global.gray500}",
+      "type": "color"
+    },
+    "textOnDark": {
+      "value": "{global.white}",
+      "type": "color"
+    },
+    "textTabInactive": {
+      "value": "{global.gray500}",
+      "type": "color"
+    },
+    "textTabActive": {
+      "value": "{global.white}",
+      "type": "color"
+    },
+    "accentColor": {
+      "value": "{global.accent}",
+      "type": "color"
+    },
+    "switchActiveColor": {
+      "value": "{global.green}",
+      "type": "color"
+    },
+    "dangerColor": {
+      "value": "{global.red}",
+      "type": "color"
+    },
+    "borderDefault": {
+      "value": "{global.gray700}",
+      "type": "color"
+    },
+    "borderBeamColorsStart": {
+      "value": "{global.beamCyan}",
+      "type": "color"
+    },
+    "borderBeamColorsEnd": {
+      "value": "{global.beamPink}",
+      "type": "color"
+    },
+    "btnPostBg": {
+      "value": "{global.gray900}",
+      "type": "color"
+    },
+    "btnPostText": {
+      "value": "{global.white}",
+      "type": "color"
+    },
+    "btnPrimaryBg": {
+      "value": "{global.white}",
+      "type": "color"
+    },
+    "btnPrimaryText": {
+      "value": "{global.gray900}",
+      "type": "color"
+    },
+    "btnPrimaryRadius": {
+      "value": "{global.radius8}",
+      "type": "borderRadius"
+    },
+    "btnDisabledOpacity": {
+      "value": "{global.opacity30}",
+      "type": "opacity"
+    },
+    "motionNoise": {
+      "value": "{global.dur50}",
+      "type": "other"
+    },
+    "motionFast": {
+      "value": "{global.dur150}",
+      "type": "other"
+    },
+    "motionNormal": {
+      "value": "{global.dur300}",
+      "type": "other"
+    },
+    "fontTab": {
+      "value": "{global.fs11}",
+      "type": "fontSizes"
+    },
+    "fontEmojiCount": {
+      "value": "{global.fs12}",
+      "type": "fontSizes"
+    },
+    "fontNickname": {
+      "value": "{global.fs16}",
+      "type": "fontSizes"
+    },
+    "fontBody": {
+      "value": "{global.fs14}",
+      "type": "fontSizes"
+    },
+    "fontCaption": {
+      "value": "{global.fs14}",
+      "type": "fontSizes"
+    },
+    "fontModalHint": {
+      "value": "{global.fs14}",
+      "type": "fontSizes"
+    },
+    "fontTimestamp": {
+      "value": "{global.fs14}",
+      "type": "fontSizes"
+    },
+    "fontCaptionLarge": {
+      "value": "{global.fs20}",
+      "type": "fontSizes"
+    },
+    "fontCaptionEmpty": {
+      "value": "{global.fs16}",
+      "type": "fontSizes"
+    },
+    "fontSectionTitle": {
+      "value": "{global.fs16}",
+      "type": "fontSizes"
+    },
+    "fontNicknameHeader": {
+      "value": "{global.fs16}",
+      "type": "fontSizes"
+    },
+    "fontPostBtn": {
+      "value": "{global.fs16}",
+      "type": "fontSizes"
+    },
+    "fontStatus": {
+      "value": "{global.fs20}",
+      "type": "fontSizes"
+    },
+    "fontEmoji": {
+      "value": "{global.fs24}",
+      "type": "fontSizes"
+    },
+    "stripPad": {
+      "value": "{global.sp8}",
+      "type": "spacing"
+    },
+    "nicknamePad": {
+      "value": "{global.sp20}",
+      "type": "spacing"
+    },
+    "emojiGap": {
+      "value": "{global.sp6}",
+      "type": "spacing"
+    },
+    "emojiItemW": {
+      "value": "{global.size44}",
+      "type": "sizing"
+    },
+    "tabBarH": {
+      "value": "{global.size49}",
+      "type": "sizing"
+    },
+    "tabIconSize": {
+      "value": "{global.size16}",
+      "type": "sizing"
+    },
+    "iconSize": {
+      "value": "{global.size20}",
+      "type": "sizing"
+    },
+    "borderWidth": {
+      "value": "{global.border1}",
+      "type": "borderWidth"
+    },
+    "modalRadius": {
+      "value": "{global.radius16}",
+      "type": "borderRadius"
+    },
+    "emojiBarRadius": {
+      "value": "{global.radius20}",
+      "type": "borderRadius"
+    },
+    "nicknameLabelRadius": {
+      "value": "{global.radius4}",
+      "type": "borderRadius"
+    },
+    "modalCardPadding": {
+      "value": "{global.sp20}",
+      "type": "spacing"
+    },
+    "postBtnRadius": {
+      "value": "{global.radius8}",
+      "type": "borderRadius"
+    },
+    "modalElementGap": {
+      "value": "{global.sp8}",
+      "type": "spacing"
+    },
+    "postBtnTopMargin": {
+      "value": "{global.sp16}",
+      "type": "spacing"
+    },
+    "sectionPad": {
+      "value": "{global.sp16}",
+      "type": "spacing"
+    },
+    "minTouchTarget": {
+      "value": "{global.size44}",
+      "type": "sizing"
+    },
+    "space4": {
+      "value": "{global.sp4}",
+      "type": "spacing"
+    },
+    "space8": {
+      "value": "{global.sp8}",
+      "type": "spacing"
+    },
+    "space12": {
+      "value": "{global.sp12}",
+      "type": "spacing"
+    },
+    "space16": {
+      "value": "{global.sp16}",
+      "type": "spacing"
+    },
+    "space20": {
+      "value": "{global.sp20}",
+      "type": "spacing"
+    },
+    "space24": {
+      "value": "{global.sp24}",
+      "type": "spacing"
+    },
+    "radiusSmall": {
+      "value": "{global.radius8}",
+      "type": "borderRadius"
+    },
+    "dotInactive": {
+      "value": "{global.gray700}",
+      "type": "color"
+    },
+    "friendRowMinHeight": {
+      "value": "{global.size64}",
+      "type": "sizing"
+    },
+    "borderBeamThickness": {
+      "value": "{global.sp8}",
+      "type": "spacing"
+    },
+    "borderBeamGlowColor": {
+      "value": "{global.white}",
+      "type": "color"
+    },
+    "borderBeamGlowOpacity": {
+      "value": "0.95",
+      "type": "opacity",
+      "description": "PRD에 리터럴로 직접 정의됨 (primitive 미참조 — 새 primitive로 승격 검토 대상)"
+    },
+    "borderBeamLength": {
+      "value": "112",
+      "type": "sizing",
+      "description": "PRD 계산식: PRIMITIVE.size56 * 2 = 112 (참조 아닌 계산된 리터럴, primitive와 연결 끊김 주의)"
+    },
+    "borderBeamDuration": {
+      "value": "4800",
+      "type": "other",
+      "description": "PRD에 리터럴로 직접 정의됨 (primitive 미참조 — 새 primitive로 승격 검토 대상)"
+    },
+    "borderBeamCornerRadius": {
+      "value": "{global.size56}",
+      "type": "sizing"
+    }
+  },
+  "$themes": [],
+  "$metadata": {
+    "tokenSetOrder": [
+      "global",
+      "semantic"
+    ]
+  }
+}
