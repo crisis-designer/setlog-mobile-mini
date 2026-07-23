@@ -218,6 +218,7 @@ Figma 없이, 코드 없이 — PRD 텍스트만 바꾸면 된다.
 | v3.41 | 2026-07-06 | **버그 수정(6-7 노출표 행 단위 재검증)**: CaptionLabel 행에서 "나"(항상 렌더+placeholder)와 "친구"(진짜 조건부, hasCaption&&)가 동일 표기로 혼동을 주던 것을 실제 동작에 맞게 구분. 나머지 노출 표 행과 버튼 조립 문법(Type A/D)은 코드와 일치 확인 |
 | v3.42 | 2026-07-22 | **문서 공백 보완(Figma 디자인시스템 역추적 중 발견)**: 섹션4에 폰트 패밀리 규칙 신규 추가 — `fontFamily` 미지정은 실수가 아니라 React Native/iOS 시스템 기본 폰트(San Francisco) 채택을 의도한 것임을 명시적으로 확정. Figma 대응 폰트는 SF Pro로 통일 결정(ADR: 커스텀 한글 웹폰트 미검토 상태에서 시스템 폰트로 즉시 통일 — iOS 전용 한계 인지, Android 스코프 진입 시 재검토 필요) |
 | v3.43 | 2026-07-23 | **버그 수정(코드 품질 실무 감사, 발견 95)** — setlog-drift-report.md F2에 이미 기록되어 있었으나 미반영이던 항목 7건을 코드에 실제로 반영: (1) FriendsScreen/SettingsScreen 인라인 `PRIMITIVE.sp*` 직접 참조 약 14곳을 `TOKEN.space*`로 교체(#21, space6 신규 토큰화), (2) 로그아웃·초기화 버튼의 `backgroundColor:PRIMITIVE.gray800` 직접 참조를 `TOKEN.btnDangerBg` 신설로 교체(#23), (3) 아이콘 크기의 `+4` 매직넘버 5곳을 `TOKEN.iconSizeLarge`(신규, `PRIMITIVE.size24`—섹션4에 이미 선언되어 있었으나 코드 미구현 상태였던 죽은 토큰을 실제로 구현) 및 탭바는 기존 `TOKEN.iconSize`로 대체(#14·#15), (4) TVNoise 스캔라인·카운트다운 딤·이모지 선택 하이라이트의 하드코딩 rgba 3건을 각각 `TOKEN.bgNoiseScanline`/`bgCountdownDim`/`emojiItemActiveBg`(신규)로 토큰화(#19·#20) — **카운트다운 딤은 §4의 죽은 토큰 `dim35`(0.35)가 아니라 화면에 이미 QA 승인된 실제 값 0.3 그대로 유지**(신규 `dim30`), TVNoise 셀 opacity도 이미 선언돼 있었으나 미사용이던 `TOKEN.bgNoiseOverlay`(0.15)를 실제로 연결, (5) 설정 화면에 하드코딩되어 있던 "v3.19" 문자열을 `APP_VERSION` 단일 상수(v3.41)로 교체(#22) — 이 상수를 향후 PRD 버전업 시 함께 갱신하는 것으로 재발 방지. 전부 값(픽셀·색상)은 화면에 보이던 그대로 유지한 순수 토큰화이며, 시각적 변화 없음을 esbuild 구문 검증 + 커밋 전후 diff로 확인 |
+| v3.44 | 2026-07-23 | **문서 정리(발견 95 후속)** — §4에 선언만 되고 코드·design-tokens.json 어디에도 구현된 적 없던 죽은 PRIMITIVE 6개(`dim35`, `opacity50`, `opacity60`, `radius999`, `white50`, `white95`)를 §4에서 삭제. 코드-PRD-Figma JSON 세 곳의 PRIMITIVE 키 집합을 전수 대조해 완전히 일치함을 확인 후 진행(제거로 새로 깨지는 참조 없음). TOKEN(시맨틱 토큰) 레이어는 이미 세 곳 모두 77개로 완전 일치 상태였음 |
 
 > **기록 규칙:** 문서 수정마다 이 표 업데이트. 버전은 문서 수정 기준.
 
@@ -307,12 +308,9 @@ const PRIMITIVE = {
 
   // Opacity
   dim10:          'rgba(0,0,0,0.10)',   // v3.43(발견 95) — TVNoise 스캔라인, 기존 하드코딩 정정
-  dim30:          'rgba(0,0,0,0.3)',    // v3.43(발견 95) — 카운트다운 딤, 기존 하드코딩 정정. dim35(0.35)와는 다른 값 — 화면에 이미 QA 승인된 실제 값(0.3)을 그대로 토큰화한 것
-  dim35:          'rgba(0,0,0,0.35)',
+  dim30:          'rgba(0,0,0,0.3)',    // v3.43(발견 95) — 카운트다운 딤, 기존 하드코딩 정정. 화면에 이미 QA 승인된 실제 값(0.3)을 그대로 토큰화한 것
   dim60:          'rgba(0,0,0,0.60)',
-  white95:        'rgba(255,255,255,0.95)',
   white80:        'rgba(255,255,255,0.80)',
-  white50:        'rgba(255,255,255,0.50)',
   white20:        'rgba(255,255,255,0.2)',   // v3.43(발견 95) — 이모지 선택 하이라이트, 기존 하드코딩 정정
   white15:        'rgba(255,255,255,0.15)',  // 어두운 배경 위 서브틀 오버레이용
   transparent:    'transparent',
@@ -322,7 +320,6 @@ const PRIMITIVE = {
   radius8:        8,
   radius16:       16,
   radius20:       20,
-  radius999:      999,
 
   // Spacing
   sp4:  4,
@@ -354,8 +351,6 @@ const PRIMITIVE = {
   size56:         56,
   size64:         64,   // FriendRow 최소 높이용
   opacity30:      0.3,
-  opacity50:      0.5,
-  opacity60:      0.6,
   opacity15:      0.15,
 
   // Accent & Danger
@@ -370,9 +365,6 @@ const PRIMITIVE = {
   dur50:          50,
   dur150:         150,
   dur300:         300,
-
-  // 예비값 (현재 TOKEN에서 직접 매핑 없음)
-  // radius999
 }
 ```
 
