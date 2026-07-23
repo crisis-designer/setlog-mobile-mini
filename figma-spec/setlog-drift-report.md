@@ -59,3 +59,22 @@ F2 나머지 (시각 값 8건)  → 항목별로 "화면에 보이는 현재 값
 
 Figma 빌드는 이 리포트의 F2 결정과 무관하게 진행 가능 — 스펙 v2가 코드(현재 화면) 기준으로 작성돼 있어,
 F2가 어느 쪽으로 결정되든 값이 바뀐 항목만 스펙 재생성 후 Figma 재빌드하면 된다.
+
+---
+
+## F4. 해결 완료 (v3.43, 발견 95 — 실무 코드 품질 감사)
+
+F2 중 아래 7건을 실제로 코드에 반영했다. 값(픽셀·색상)은 화면에 이미 보이던 그대로 유지한 순수 토큰화이며,
+esbuild 구문 검증 + 커밋 전후 diff로 다른 곳이 안 바뀌었음을 확인했다.
+
+| # | 처리 |
+|---|---|
+| 14 | `TOKEN.tabIconSize+4` → 결과값(20)이 이미 존재하던 `TOKEN.iconSize`와 동일해 그대로 대체. 신규 토큰 없이 기존 토큰 재사용 |
+| 15 | `TOKEN.iconSize+4` → `TOKEN.iconSizeLarge`(신규, `PRIMITIVE.size24`) — size24는 §4에 이미 선언되어 있었으나 TOKEN 매핑이 없어 코드가 못 쓰고 있던 죽은 primitive였음, 이번에 실제로 연결 |
+| 19 | 이모지 선택 하이라이트 하드코딩 rgba → `TOKEN.emojiItemActiveBg`(신규, `PRIMITIVE.white20`). "배경 하이라이트 금지" 규칙과의 긴장은 별개 제품 판단 사항으로 남겨둠(이번 작업 범위는 토큰화만) |
+| 20 | 카운트다운 딤 하드코딩 rgba → `TOKEN.bgCountdownDim`(신규, `PRIMITIVE.dim30`). **dim35(0.35)는 쓰지 않음** — 화면에 이미 QA 승인된 실제 값(0.3)을 그대로 토큰화하는 쪽으로 결정 |
+| 21 | 인라인 `PRIMITIVE.sp*` 직접 참조 약 14곳(FriendsScreen/SettingsScreen) → `TOKEN.space*`. `space6`은 기존에 없어 신규 추가 |
+| 22 | 설정탭 "v3.19" 하드코딩 → `APP_VERSION` 단일 상수(v3.41) 신설. PRD §8에 "PRD 버전업 시 함께 갱신" 규칙 추가로 재발 방지 |
+| 23 | 로그아웃/초기화 버튼 `PRIMITIVE.gray800` 직접 참조 → `TOKEN.btnDangerBg`(신규) |
+
+**미해결로 남긴 것(이번 범위 밖):** F1(PRD 내부 드리프트 10건), F2 중 시각 값 8건(#11~13, #16~18, #24~25), 죽은 PRIMITIVE 나머지(radius999·white50·white95·opacity50·opacity60) — 전부 코드 수정이 아니라 제품 판단이 필요하거나 이번 감사 범위(토큰 격리)와 무관해 별도로 남겨둔다.

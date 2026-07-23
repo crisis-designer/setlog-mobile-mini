@@ -217,6 +217,7 @@ Figma 없이, 코드 없이 — PRD 텍스트만 바꾸면 된다.
 | v3.40 | 2026-07-06 | **버그 수정(교차참조 무결성 + 설치안내 완전성)**: 섹션 X-Y 교차참조 전수 검증(끊어진 참조 없음), 섹션13 설치 안내에 expo-camera/expo-video 누락 발견 및 추가 |
 | v3.41 | 2026-07-06 | **버그 수정(6-7 노출표 행 단위 재검증)**: CaptionLabel 행에서 "나"(항상 렌더+placeholder)와 "친구"(진짜 조건부, hasCaption&&)가 동일 표기로 혼동을 주던 것을 실제 동작에 맞게 구분. 나머지 노출 표 행과 버튼 조립 문법(Type A/D)은 코드와 일치 확인 |
 | v3.42 | 2026-07-22 | **문서 공백 보완(Figma 디자인시스템 역추적 중 발견)**: 섹션4에 폰트 패밀리 규칙 신규 추가 — `fontFamily` 미지정은 실수가 아니라 React Native/iOS 시스템 기본 폰트(San Francisco) 채택을 의도한 것임을 명시적으로 확정. Figma 대응 폰트는 SF Pro로 통일 결정(ADR: 커스텀 한글 웹폰트 미검토 상태에서 시스템 폰트로 즉시 통일 — iOS 전용 한계 인지, Android 스코프 진입 시 재검토 필요) |
+| v3.43 | 2026-07-23 | **버그 수정(코드 품질 실무 감사, 발견 95)** — setlog-drift-report.md F2에 이미 기록되어 있었으나 미반영이던 항목 7건을 코드에 실제로 반영: (1) FriendsScreen/SettingsScreen 인라인 `PRIMITIVE.sp*` 직접 참조 약 14곳을 `TOKEN.space*`로 교체(#21, space6 신규 토큰화), (2) 로그아웃·초기화 버튼의 `backgroundColor:PRIMITIVE.gray800` 직접 참조를 `TOKEN.btnDangerBg` 신설로 교체(#23), (3) 아이콘 크기의 `+4` 매직넘버 5곳을 `TOKEN.iconSizeLarge`(신규, `PRIMITIVE.size24`—섹션4에 이미 선언되어 있었으나 코드 미구현 상태였던 죽은 토큰을 실제로 구현) 및 탭바는 기존 `TOKEN.iconSize`로 대체(#14·#15), (4) TVNoise 스캔라인·카운트다운 딤·이모지 선택 하이라이트의 하드코딩 rgba 3건을 각각 `TOKEN.bgNoiseScanline`/`bgCountdownDim`/`emojiItemActiveBg`(신규)로 토큰화(#19·#20) — **카운트다운 딤은 §4의 죽은 토큰 `dim35`(0.35)가 아니라 화면에 이미 QA 승인된 실제 값 0.3 그대로 유지**(신규 `dim30`), TVNoise 셀 opacity도 이미 선언돼 있었으나 미사용이던 `TOKEN.bgNoiseOverlay`(0.15)를 실제로 연결, (5) 설정 화면에 하드코딩되어 있던 "v3.19" 문자열을 `APP_VERSION` 단일 상수(v3.41)로 교체(#22) — 이 상수를 향후 PRD 버전업 시 함께 갱신하는 것으로 재발 방지. 전부 값(픽셀·색상)은 화면에 보이던 그대로 유지한 순수 토큰화이며, 시각적 변화 없음을 esbuild 구문 검증 + 커밋 전후 diff로 확인 |
 
 > **기록 규칙:** 문서 수정마다 이 표 업데이트. 버전은 문서 수정 기준.
 
@@ -305,11 +306,14 @@ const PRIMITIVE = {
   gray900:        '#111827',
 
   // Opacity
+  dim10:          'rgba(0,0,0,0.10)',   // v3.43(발견 95) — TVNoise 스캔라인, 기존 하드코딩 정정
+  dim30:          'rgba(0,0,0,0.3)',    // v3.43(발견 95) — 카운트다운 딤, 기존 하드코딩 정정. dim35(0.35)와는 다른 값 — 화면에 이미 QA 승인된 실제 값(0.3)을 그대로 토큰화한 것
   dim35:          'rgba(0,0,0,0.35)',
   dim60:          'rgba(0,0,0,0.60)',
   white95:        'rgba(255,255,255,0.95)',
   white80:        'rgba(255,255,255,0.80)',
   white50:        'rgba(255,255,255,0.50)',
+  white20:        'rgba(255,255,255,0.2)',   // v3.43(발견 95) — 이모지 선택 하이라이트, 기존 하드코딩 정정
   white15:        'rgba(255,255,255,0.15)',  // 어두운 배경 위 서브틀 오버레이용
   transparent:    'transparent',
 
@@ -381,7 +385,9 @@ const TOKEN = {
   bgTabBar:             PRIMITIVE.gray900,
   bgModalDim:           PRIMITIVE.dim60,
   bgModalCard:          PRIMITIVE.white,
-  bgNoiseOverlay:       PRIMITIVE.opacity15,   // 눈 피로 감소를 위해 낮은 값 사용
+  bgNoiseOverlay:       PRIMITIVE.opacity15,   // 눈 피로 감소를 위해 낮은 값 사용. v3.43(발견 95): 선언만 되고 실제로는 미사용(하드코딩 0.15)이던 것을 TVNoise 셀 opacity에 실제 연결
+  bgNoiseScanline:      PRIMITIVE.dim10,       // v3.43(발견 95) 신규 — TVNoise 스캔라인 오버레이, 기존 하드코딩 정정
+  bgCountdownDim:       PRIMITIVE.dim30,       // v3.43(발견 95) 신규 — 카운트다운 딤 배경, 기존 하드코딩 정정
 
   // Text
   textPrimary:          PRIMITIVE.gray900,
@@ -406,6 +412,7 @@ const TOKEN = {
   btnPrimaryText:       PRIMITIVE.gray900,
   btnPrimaryRadius:     PRIMITIVE.radius8,
   btnDisabledOpacity:   PRIMITIVE.opacity30,
+  btnDangerBg:          PRIMITIVE.gray800,     // v3.43(발견 95) 신규 — 로그아웃·초기화 버튼, 기존 PRIMITIVE 직접 참조 정정
 
   // Interactive
   // Motion (컴포넌트 내부 인터랙션 전용)
@@ -434,10 +441,12 @@ const TOKEN = {
   nicknamePad:          PRIMITIVE.sp20,   // 닉네임 여백
   emojiGap:             PRIMITIVE.sp6,    // 이모지 간격
   emojiItemW:           PRIMITIVE.size44,
+  emojiItemActiveBg:    PRIMITIVE.white20,    // v3.43(발견 95) 신규 — 이모지 선택 하이라이트, 기존 하드코딩 정정
   emojiBarBg:           PRIMITIVE.white15,    // 이모지 바 전체 반투명 배경 (가시성)
   tabBarH:              PRIMITIVE.size49,
   tabIconSize:          PRIMITIVE.size16,
   iconSize:             PRIMITIVE.size20,
+  iconSizeLarge:        PRIMITIVE.size24,      // v3.43(발견 95) 신규 — 친구탭 액션·뒤로가기 아이콘, 기존 "+4" 매직넘버 정정(20+4=24). PRIMITIVE.size24 자체는 이미 §4에 선언되어 있었으나 TOKEN 매핑이 없어 코드가 못 쓰고 있었음
   borderWidth:          PRIMITIVE.border1,
   modalRadius:          PRIMITIVE.radius16,
   emojiBarRadius:       PRIMITIVE.radius20,
@@ -455,6 +464,7 @@ const TOKEN = {
   // 직접 참조하지 않고 이 계층을 통해서만 쓰도록 하는 탈출구. 의미 있는 이름을 붙일 수
   // 있는 값은 여기 대신 전용 의미 토큰을 새로 만든다)
   space4:               PRIMITIVE.sp4,
+  space6:               PRIMITIVE.sp6,     // v3.43(발견 95) 신규 — friendStatus 등, 기존 인라인 PRIMITIVE.sp6 직접 참조 정정
   space8:               PRIMITIVE.sp8,
   space12:              PRIMITIVE.sp12,
   space16:              PRIMITIVE.sp16,
@@ -1235,7 +1245,8 @@ ScrollView (padding sp20, gap sp24)
 │   └── "전체 초기화" 버튼 (dangerColor 텍스트)
 │
 └── 섹션: 앱 정보
-    └── "Setlog Mobile Mini"
+    ├── "Setlog Mobile Mini"
+    └── 버전 문자열 — 코드의 `APP_VERSION` 단일 상수 참조(v3.43(발견 95) 신규 규칙: 이 문서 버전이 오를 때마다 그 상수값도 함께 갱신한다. "v3.19" 하드코딩 방치가 재발한 원인이 별도 상수 자체가 없었던 것이므로, 상수화 + 이 규칙으로 재발을 막는다)
 ```
 
 > **촬영은 설정탭에 없음** — 피드탭에서 "탭해서 찍기" 텍스트를 탭해서 전체화면 카메라로 촬영

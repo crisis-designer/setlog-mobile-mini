@@ -84,7 +84,7 @@ L1 -bg           Background
 | 프레임 | 402×183 (도킹) | **402×874 전체화면, cornerRadius `semantic.borderBeamCornerRadius`(56)** | 402×183 | 402×183 |
 | `-bg` | gray800 fill + 라벨 "CameraView (live)" (C1·C5) | 동일 | 파스텔 샘플 fill `#B5EAD7` + 라벨 "촬영본" | 동일 |
 | `-statusCenter` StatusLabel | ✅ Text "탭해서 찍기" — absoluteFill 정중앙, `semantic.fontStatus`(20), weight 700, `semantic.textOnDark` | ❌ | ❌ | ❌ |
-| `-overlay` Countdown | ❌ | ✅ absoluteFill, bg rgba(0,0,0,0.3) ⚠D#20(하드코딩, dim35 후보) + Text "2" 중앙, 80pt, weight 900, `textOnDark`, Drop Shadow rgba(0,0,0,0.6) y2 blur10 | ❌ | ❌ |
+| `-overlay` Countdown | ❌ | ✅ absoluteFill, bg `semantic.bgCountdownDim`(rgba 0,0,0,0.3 — v3.43 발견 95 해결, dim35 아닌 기존 화면 값 그대로 토큰화) + Text "2" 중앙, 80pt, weight 900, `textOnDark`, Drop Shadow rgba(0,0,0,0.6) y2 blur10 | ❌ | ❌ |
 | `-overlay` BorderBeam | ❌ | ✅ §5 컴포넌트 인스턴스, absoluteFill | ❌ | ❌ |
 | `-statusCenter` CaptionLabel | ❌ | ❌ | ❌ | ✅ **항상 존재** (§6-7 v3.41 기준) — hasCaption=true: Text 캡션, `semantic.fontCaptionLarge`(20) weight 600 / false: Text "캡션 추가", `semantic.fontCaptionEmpty`(16) weight 300 opacity 0.6. 공통: absoluteFill 정중앙 포지셔너 + 내부 터치영역 paddingV `space8` paddingH `space20`, Drop Shadow rgba(0,0,0,0.5) y1 blur4, 1줄 |
 | `-bottomLeft` Timestamp | ❌ | ❌ | ❌ | ✅ Text "방금 전", bottom/left `nicknamePad`(20) ⚠D#4(§8은 stripPad — stale), `semantic.fontTimestamp`(14) weight 500 |
@@ -117,7 +117,7 @@ Description 기록: "Animated.loop linear, duration 4800ms(semantic.borderBeamDu
 | Variant | 구성 |
 |---|---|
 | `icon` | Text "💬", size `semantic.fontEmoji`(24), opacity 0.8 ⚠D#11(§6-4는 0.7), 터치패딩 `space4` |
-| `barOpen` | Auto Layout row, gap `semantic.emojiGap`(6), bg `semantic.emojiBarBg`(rgba 255,255,255,0.15), radius `semantic.emojiBarRadius`(20), padH `space8` padV `space4`. 아이템 5개 🔥😂👍😮😢 각 `semantic.emojiItemW`(44×44) 중앙정렬, radius `radiusSmall`(8). 내 선택 아이템: bg rgba(255,255,255,0.2) ⚠D#19(하드코딩+체크리스트 "배경 하이라이트 금지"와 긴장) |
+| `barOpen` | Auto Layout row, gap `semantic.emojiGap`(6), bg `semantic.emojiBarBg`(rgba 255,255,255,0.15), radius `semantic.emojiBarRadius`(20), padH `space8` padV `space4`. 아이템 5개 🔥😂👍😮😢 각 `semantic.emojiItemW`(44×44) 중앙정렬, radius `radiusSmall`(8). 내 선택 아이템: bg `semantic.emojiItemActiveBg`(rgba 255,255,255,0.2 — v3.43 발견 95, 토큰화 완료. 체크리스트 "배경 하이라이트 금지"와의 긴장은 별개 제품 판단으로 미해결) |
 | `selected` | Auto Layout row gap `space4` — **reactions 배열 전체를 가로로** 렌더 ⚠D#13(PRD는 "단독 표시"), 각 Text size `fontEmoji`(24), 내 선택만 scale 1.15 ⚠D#12(PRD는 1.2) |
 
 Description 기록: "상태1→2 fade+slideUp motionNormal(300ms), 2→3 bar fadeout+scale bounce motionFast(150ms)"
@@ -147,7 +147,7 @@ Auto Layout row, 각 탭 flex 균등(134×49), 수직 중앙, 내부 gap `space4
 
 | 탭 | 아이콘 placeholder(C1) | 라벨 | 크기 |
 |---|---|---|---|
-| 피드(활성 예시) | `icon:home` | "피드" | 아이콘 20 ⚠D#14(PRD tabIconSize=16, 코드 +4), 라벨 `semantic.fontTab`(11) weight 500 |
+| 피드(활성 예시) | `icon:home` | "피드" | 아이콘 20, `semantic.iconSize` 토큰 재사용(v3.43 발견 95 — 기존 "tabIconSize+4" 매직넘버 해결), 라벨 `semantic.fontTab`(11) weight 500 |
 | 친구(비활성) | `icon:people-outline` | "친구" | 동일 |
 | 설정(비활성) | `icon:settings-outline` | "설정" | 동일 |
 
@@ -178,7 +178,7 @@ Auto Layout row, 각 탭 flex 균등(134×49), 수직 중앙, 내부 gap `space4
 |---|---|---|---|
 | `Button/TypeA-Post` (올리기) | `semantic.btnPostBg`(#111827) | `semantic.btnPostText`(white), `fontPostBtn`(16) w600 | h `minTouchTarget`(44), radius `postBtnRadius`(8), w 100% |
 | `Button/TypeD-Filled` (초대·친구추가·Auth 기본버튼) | `semantic.btnPrimaryBg`(white) | `semantic.btnPrimaryText`(#111827), `fontBody`(14) w600 | h 44, radius `btnPrimaryRadius`(8) |
-| `Button/TypeD-Danger` (로그아웃·전체초기화) | gray800 ⚠D#23(PRD 명세 공백, 코드 PRIMITIVE 직접 참조) | `semantic.dangerColor`(#FF3B30) | TypeD와 동일 형상 |
+| `Button/TypeD-Danger` (로그아웃·전체초기화) | `semantic.btnDangerBg`(gray800 — v3.43 발견 95, 토큰화 완료) | `semantic.dangerColor`(#FF3B30) | TypeD와 동일 형상 |
 | 비활성 modifier | 동일 + opacity `btnDisabledOpacity`(0.3) | | |
 
 > 코드의 AuthFlow/친구탭 기본 버튼은 §6-4 Type A(btnPostBg)가 아니라 흰 배경(btnPrimaryBg) — 다크 화면 위 가시성 때문. Figma는 코드 기준 TypeD 계열로 명명.
@@ -205,11 +205,11 @@ Description: "shootExpand 애니메이션 duration motionNormal(300ms), 도킹�
 
 ```
 SafeArea 상단 59 + 콘텐츠 (padding space20, 섹션 gap space24) + TabBar(친구 활성)
-├── 섹션 "친구 초대": Title fontSectionTitle(16) w700 → Body "링크로 친구를 셋로그에 초대하세요" fontBody(14), mt 12 mb 20 (⚠D#21 인라인 sp) → Button/TypeD "초대 링크 보내기"
+├── 섹션 "친구 초대": Title fontSectionTitle(16) w700 → Body "링크로 친구를 셋로그에 초대하세요" fontBody(14), mt `space12` mb `space20`(v3.43 발견 95 — 기존 인라인 PRIMITIVE.sp 직접 참조 해결) → Button/TypeD "초대 링크 보내기"
 └── 섹션 "친구 목록 (3/3)": Title → Body "📷 아이콘으로 촬영완료 시뮬 · 🗑 아이콘으로 삭제" mt 12 mb 16
     ├── FriendRow × 3: minHeight friendRowMinHeight(64), padV space16, 하단 border 1 borderDefault
     │   ├── 좌: 닉네임 fontSectionTitle(16) w600 + 상태 "⏳ 대기중"/"✅ 촬영완료" fontBody(14) mt 6
-    │   └── 우: 아이콘 2개 각 44×44 터치 — icon:camera-outline(또는 checkmark-circle, fill accentColor) / icon:trash-outline fill dangerColor, 아이콘 크기 24 ⚠D#15
+    │   └── 우: 아이콘 2개 각 44×44 터치 — icon:camera-outline(또는 checkmark-circle, fill accentColor) / icon:trash-outline fill dangerColor, 아이콘 크기 24, `semantic.iconSizeLarge` 토큰(v3.43 발견 95 — 기존 "iconSize+4" 매직넘버 해결)
     └── (friends<3일 때) Button/TypeD "+ 친구 추가 (시뮬)" mt 20 ⚠D#24(§8/§11 트리에 없음 — PRD 공백)
 ```
 
@@ -221,7 +221,7 @@ SafeArea 59 + ScrollView (padding space20, gap space24) + TabBar(설정 활성)
 ├── "알림": Title → Row "알림 받기" fontSectionTitle + Switch(ON switchActiveColor) → 도움말 "알림이 켜져 있어야 피드에서 탭으로 찍을 수 있어요" fontBody textSecondary mt 12 ⚠D#25(§8 공백)
 ├── "계정": Title → Button/TypeD-Danger "로그아웃" mt 16
 ├── "데이터": Title → Button/TypeD-Danger "전체 초기화" mt 16
-└── "앱 정보": Title → "Setlog Mobile Mini" fontBody mt 16 → 버전 문자열 mt 8 ⚠D#22(코드에 "v3.19" stale 하드코딩 — Figma에는 "v3.41" 기록)
+└── "앱 정보": Title → "Setlog Mobile Mini" fontBody mt 16 → 버전 문자열 mt 8, 코드의 `APP_VERSION` 상수 참조(v3.43 발견 95 — 기존 "v3.19" stale 하드코딩 해결, 현재 값 "v3.41")
 각 섹션: 하단 border 1 borderDefault, paddingBottom space24
 ```
 

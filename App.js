@@ -20,15 +20,18 @@ const PRIMITIVE = {
   gray100:'#F3F4F6', gray200:'#E5E7EB', gray300:'#D1D5DB',
   gray400:'#9CA3AF', gray500:'#6B7280',
   gray700:'#374151', gray800:'#1F2937', gray900:'#111827',
+  dim10:'rgba(0,0,0,0.10)',
+  dim30:'rgba(0,0,0,0.3)',
   dim60:'rgba(0,0,0,0.60)',
   white15:'rgba(255,255,255,0.15)',
+  white20:'rgba(255,255,255,0.2)',
   white80:'rgba(255,255,255,0.80)',
   transparent:'transparent',
   radius4:4, radius8:8, radius16:16, radius20:20,
   sp4:4, sp6:6, sp8:8, sp12:12, sp16:16, sp20:20, sp24:24,
   fs11:11, fs12:12, fs14:14, fs16:16, fs20:20, fs24:24,
   border1:1,
-  size16:16, size20:20, size36:36, size44:44, size49:49, size56:56, size64:64,
+  size16:16, size20:20, size24:24, size36:36, size44:44, size49:49, size56:56, size64:64,
   opacity30:0.3, opacity15:0.15,
   accent:'#B5EAD7',
   green:'#34C759',
@@ -67,6 +70,7 @@ const TOKEN = {
   btnPrimaryText:     PRIMITIVE.gray900,
   btnPrimaryRadius:   PRIMITIVE.radius8,
   btnDisabledOpacity: PRIMITIVE.opacity30,
+  btnDangerBg:        PRIMITIVE.gray800,   // v3.42(발견 95) — 로그아웃·초기화 버튼이 PRIMITIVE.gray800을 직접 참조하던 것을 토큰화
 
   motionNoise:        PRIMITIVE.dur50,
   motionFast:         PRIMITIVE.dur150,
@@ -94,6 +98,7 @@ const TOKEN = {
   tabBarH:            PRIMITIVE.size49,
   tabIconSize:        PRIMITIVE.size16,
   iconSize:           PRIMITIVE.size20,
+  iconSizeLarge:      PRIMITIVE.size24,   // v3.42(발견 95) — 아이콘에 매직넘버 +4를 더하던 5곳을 대체(20+4=24)
   borderWidth:        PRIMITIVE.border1,
   modalRadius:        PRIMITIVE.radius16,
   emojiBarRadius:     PRIMITIVE.radius20,
@@ -109,6 +114,7 @@ const TOKEN = {
   // 직접 참조하지 않고 이 계층을 통해서만 쓰도록 하는 탈출구. 의미 있는 이름을 붙일 수
   // 있는 값은 여기 대신 전용 의미 토큰을 새로 만든다)
   space4:             PRIMITIVE.sp4,
+  space6:             PRIMITIVE.sp6,   // v3.42(발견 95) — friendStatus 등에서 쓰이던 인라인 PRIMITIVE.sp6 대체
   space8:             PRIMITIVE.sp8,
   space12:            PRIMITIVE.sp12,
   space16:            PRIMITIVE.sp16,
@@ -117,6 +123,9 @@ const TOKEN = {
   radiusSmall:        PRIMITIVE.radius8,
   dotInactive:        PRIMITIVE.gray700,
   friendRowMinHeight: PRIMITIVE.size64,
+  bgNoiseScanline:    PRIMITIVE.dim10,   // v3.42(발견 95) — TVNoise 스캔라인 오버레이 하드코딩 rgba 정정
+  bgCountdownDim:     PRIMITIVE.dim30,   // v3.42(발견 95) — 카운트다운 딤 배경 하드코딩 rgba 정정
+  emojiItemActiveBg:  PRIMITIVE.white20, // v3.42(발견 95) — 이모지 선택 하이라이트 하드코딩 rgba 정정
 
   borderBeamThickness: PRIMITIVE.sp8,   // v3.25: 12dp→8dp (상시 트랙 추가로 두께 축소)
   borderBeamGlowColor: PRIMITIVE.white,   // v3.26 신규 — 베이스 라인 위를 스치는 빛의 색
@@ -129,6 +138,9 @@ const TOKEN = {
 // ─────────────────────────────────────────────
 // 상수
 // ─────────────────────────────────────────────
+// v3.42(발견 95) — 설정 화면에 "v3.19"가 하드코딩되어 실제 PRD 버전(v3.41)과 어긋나 있던 것을
+// 단일 상수로 정정. PRD 버전이 오를 때 이 값도 함께 갱신한다(설정 화면 앱 정보 표시가 유일한 참조처).
+const APP_VERSION = 'v3.41'
 const PHOTO_COLORS = ['#A8D8EA','#AA96DA','#FCBAD3','#FFFFD2','#B5EAD7','#FFD7BA','#C7CEEA']
 const EMOJI_LIST = ['🔥','😂','👍','😮','😢']
 const NOISE_COLORS = ['#000','#111','#222','#333']
@@ -170,7 +182,7 @@ const TVNoise = React.memo(({ width, height }) => {
     Array.from({length:NOISE_ROWS}, () =>
       Array.from({length:NOISE_COLS}, () => ({
         color:NOISE_COLORS[Math.floor(Math.random()*NOISE_COLORS.length)],
-        opacity:Math.random()*0.15,
+        opacity:Math.random()*TOKEN.bgNoiseOverlay,
       }))
     )
   )
@@ -179,7 +191,7 @@ const TVNoise = React.memo(({ width, height }) => {
       setGrid(Array.from({length:NOISE_ROWS}, () =>
         Array.from({length:NOISE_COLS}, () => ({
           color:NOISE_COLORS[Math.floor(Math.random()*NOISE_COLORS.length)],
-          opacity:Math.random()*0.15,
+          opacity:Math.random()*TOKEN.bgNoiseOverlay,
         }))
       ))
     }, TOKEN.motionNoise)
@@ -196,7 +208,7 @@ const TVNoise = React.memo(({ width, height }) => {
           ))}
         </View>
       ))}
-      <View style={[StyleSheet.absoluteFillObject, {backgroundColor:'rgba(0,0,0,0.10)'}]} />
+      <View style={[StyleSheet.absoluteFillObject, {backgroundColor:TOKEN.bgNoiseScanline}]} />
     </View>
   )
 })
@@ -642,7 +654,7 @@ function FriendsScreen({ friends, onInvite, onSimulatePost, onDeleteFriend, onAd
     <ScrollView style={styles.tabScreen} contentContainerStyle={styles.tabScreenContent}>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>친구 초대</Text>
-        <Text style={[styles.sectionBody, {marginTop:PRIMITIVE.sp12, marginBottom:PRIMITIVE.sp20}]}>
+        <Text style={[styles.sectionBody, {marginTop:TOKEN.space12, marginBottom:TOKEN.space20}]}>
           링크로 친구를 셋로그에 초대하세요
         </Text>
         <TouchableOpacity style={styles.primaryBtn} onPress={onInvite} activeOpacity={0.8}>
@@ -651,14 +663,14 @@ function FriendsScreen({ friends, onInvite, onSimulatePost, onDeleteFriend, onAd
       </View>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>친구 목록 ({friends.length}/3)</Text>
-        <Text style={[styles.sectionBody, {marginTop:PRIMITIVE.sp12, marginBottom:PRIMITIVE.sp16}]}>
+        <Text style={[styles.sectionBody, {marginTop:TOKEN.space12, marginBottom:TOKEN.space16}]}>
           📷 아이콘으로 촬영완료 시뮬 · 🗑 아이콘으로 삭제
         </Text>
         {friends.map(f => (
           <View key={f.id} style={styles.friendRow}>
             <View style={{flex:1, justifyContent:'center'}}>
               <Text style={styles.friendName}>{f.nickname}</Text>
-              <Text style={[styles.friendStatus, {marginTop:PRIMITIVE.sp6}]}>
+              <Text style={[styles.friendStatus, {marginTop:TOKEN.space6}]}>
                 {f.status==='posted' ? '✅ 촬영완료' : '⏳ 대기중'}
               </Text>
             </View>
@@ -668,19 +680,19 @@ function FriendsScreen({ friends, onInvite, onSimulatePost, onDeleteFriend, onAd
               accessibilityRole="button"
               accessibilityLabel={f.status==='posted' ? '촬영 완료됨' : '촬영 완료 시뮬레이션'}
             >
-              <Ionicons name={f.status==='posted'?'checkmark-circle':'camera-outline'} size={TOKEN.iconSize+4} color={f.status==='posted'?TOKEN.accentColor:TOKEN.textOnDark} />
+              <Ionicons name={f.status==='posted'?'checkmark-circle':'camera-outline'} size={TOKEN.iconSizeLarge} color={f.status==='posted'?TOKEN.accentColor:TOKEN.textOnDark} />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconBtn} onPress={() => onDeleteFriend(f.id, f.nickname)} activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel={`${f.nickname} 삭제`}
             >
-              <Ionicons name="trash-outline" size={TOKEN.iconSize+4} color={TOKEN.dangerColor} />
+              <Ionicons name="trash-outline" size={TOKEN.iconSizeLarge} color={TOKEN.dangerColor} />
             </TouchableOpacity>
           </View>
         ))}
         {friends.length < 3 && (
-          <TouchableOpacity style={[styles.primaryBtn, {marginTop:PRIMITIVE.sp20}]} onPress={onAddFriend} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.primaryBtn, {marginTop:TOKEN.space20}]} onPress={onAddFriend} activeOpacity={0.8}>
             <Text style={styles.primaryBtnText}>+ 친구 추가 (시뮬)</Text>
           </TouchableOpacity>
         )}
@@ -699,7 +711,7 @@ function SettingsScreen({ nickname, onNicknameChange, notifOn, onToggleNotif, on
     <ScrollView style={styles.tabScreen} contentContainerStyle={styles.tabScreenContent}>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>내 정보</Text>
-        <View style={{marginTop:PRIMITIVE.sp16}}>
+        <View style={{marginTop:TOKEN.space16}}>
           <Text style={styles.nicknameLabel}>닉네임</Text>
           <TextInput
             style={styles.nicknameInput}
@@ -714,7 +726,7 @@ function SettingsScreen({ nickname, onNicknameChange, notifOn, onToggleNotif, on
       </View>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>알림</Text>
-        <View style={[styles.settingRow, {marginTop:PRIMITIVE.sp16}]}>
+        <View style={[styles.settingRow, {marginTop:TOKEN.space16}]}>
           <Text style={styles.settingLabel}>알림 받기</Text>
           <Switch
             value={notifOn}
@@ -724,24 +736,24 @@ function SettingsScreen({ nickname, onNicknameChange, notifOn, onToggleNotif, on
             ios_backgroundColor={PRIMITIVE.gray700}
           />
         </View>
-        <Text style={[styles.sectionBody, {marginTop:PRIMITIVE.sp12}]}>알림이 켜져 있어야 피드에서 탭으로 찍을 수 있어요</Text>
+        <Text style={[styles.sectionBody, {marginTop:TOKEN.space12}]}>알림이 켜져 있어야 피드에서 탭으로 찍을 수 있어요</Text>
       </View>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>계정</Text>
-        <TouchableOpacity style={[styles.primaryBtn, {backgroundColor:PRIMITIVE.gray800, marginTop:PRIMITIVE.sp16}]} onPress={onLogout} activeOpacity={0.8}>
+        <TouchableOpacity style={[styles.primaryBtn, {backgroundColor:TOKEN.btnDangerBg, marginTop:TOKEN.space16}]} onPress={onLogout} activeOpacity={0.8}>
           <Text style={[styles.primaryBtnText, {color:TOKEN.dangerColor}]}>로그아웃</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>데이터</Text>
-        <TouchableOpacity style={[styles.primaryBtn, {backgroundColor:PRIMITIVE.gray800, marginTop:PRIMITIVE.sp16}]} onPress={onReset} activeOpacity={0.8}>
+        <TouchableOpacity style={[styles.primaryBtn, {backgroundColor:TOKEN.btnDangerBg, marginTop:TOKEN.space16}]} onPress={onReset} activeOpacity={0.8}>
           <Text style={[styles.primaryBtnText, {color:TOKEN.dangerColor}]}>전체 초기화</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.sectionBox}>
         <Text style={styles.sectionTitle}>앱 정보</Text>
-        <Text style={[styles.sectionBody, {marginTop:PRIMITIVE.sp16}]}>Setlog Mobile Mini</Text>
-        <Text style={[styles.sectionBody, {marginTop:PRIMITIVE.sp8}]}>v3.19</Text>
+        <Text style={[styles.sectionBody, {marginTop:TOKEN.space16}]}>Setlog Mobile Mini</Text>
+        <Text style={[styles.sectionBody, {marginTop:TOKEN.space8}]}>{APP_VERSION}</Text>
       </View>
     </ScrollView>
   )
@@ -771,7 +783,7 @@ function TabBar({ activeTab, onTabPress, tabBarTotalH, safeAreaBottom, locked })
             accessibilityState={{selected: active}}
             accessibilityLabel={tab.label}
           >
-            <Ionicons name={active?tab.icon:tab.iconOff} size={TOKEN.tabIconSize+4} color={color} />
+            <Ionicons name={active?tab.icon:tab.iconOff} size={TOKEN.iconSize} color={color} />
             <Text style={[styles.tabLabel, {color}]}>{tab.label}</Text>
           </TouchableOpacity>
         )
@@ -918,7 +930,7 @@ function AuthFlow({ authStatus, authDraft, authError, onChangeDraft, onWelcomeNe
     return (
       <SafeAreaView style={styles.authSafeArea}>
         <TouchableOpacity style={styles.authBackBtn} onPress={onBack} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="뒤로가기">
-          <Ionicons name="chevron-back" size={TOKEN.iconSize+4} color={TOKEN.textOnDark} />
+          <Ionicons name="chevron-back" size={TOKEN.iconSizeLarge} color={TOKEN.textOnDark} />
         </TouchableOpacity>
         <View style={styles.authBodyWrap}>
           <Text style={styles.authQuestion}>이미 계정이 있으신가요?</Text>
@@ -952,7 +964,7 @@ function AuthFlow({ authStatus, authDraft, authError, onChangeDraft, onWelcomeNe
       <SafeAreaView style={styles.authSafeArea}>
         <View style={styles.authTopBar}>
           <TouchableOpacity style={styles.authBackBtn} onPress={onBack} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="뒤로가기">
-            <Ionicons name="chevron-back" size={TOKEN.iconSize+4} color={TOKEN.textOnDark} />
+            <Ionicons name="chevron-back" size={TOKEN.iconSizeLarge} color={TOKEN.textOnDark} />
           </TouchableOpacity>
           <View style={styles.authDotsRow}>
             {Array.from({length: config.dots}).map((_, i) => (
@@ -1399,7 +1411,7 @@ const styles = StyleSheet.create({
   countdownOverlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent:'center', alignItems:'center',
-    backgroundColor:'rgba(0,0,0,0.3)',
+    backgroundColor:TOKEN.bgCountdownDim,
   },
   countdownText: {
     color:TOKEN.textOnDark, fontWeight:'900',
@@ -1448,7 +1460,7 @@ const styles = StyleSheet.create({
     width:TOKEN.emojiItemW, height:TOKEN.emojiItemW,
     justifyContent:'center', alignItems:'center', borderRadius:TOKEN.radiusSmall,
   },
-  emojiItemActive: {backgroundColor:'rgba(255,255,255,0.2)'},
+  emojiItemActive: {backgroundColor:TOKEN.emojiItemActiveBg},
   emojiChar: {fontSize:TOKEN.fontEmoji},
 
   tabBar: {

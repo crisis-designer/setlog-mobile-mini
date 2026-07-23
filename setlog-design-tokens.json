@@ -40,12 +40,24 @@
       "value": "#111827",
       "type": "color"
     },
+    "dim10": {
+      "value": "rgba(0,0,0,0.10)",
+      "type": "color"
+    },
+    "dim30": {
+      "value": "rgba(0,0,0,0.3)",
+      "type": "color"
+    },
     "dim60": {
       "value": "rgba(0,0,0,0.60)",
       "type": "color"
     },
     "white15": {
       "value": "rgba(255,255,255,0.15)",
+      "type": "color"
+    },
+    "white20": {
+      "value": "rgba(255,255,255,0.2)",
       "type": "color"
     },
     "white80": {
@@ -136,6 +148,10 @@
       "value": "20",
       "type": "sizing"
     },
+    "size24": {
+      "value": "24",
+      "type": "sizing"
+    },
     "size36": {
       "value": "36",
       "type": "sizing"
@@ -222,6 +238,14 @@
       "value": "{global.opacity15}",
       "type": "opacity"
     },
+    "bgNoiseScanline": {
+      "value": "{global.dim10}",
+      "type": "color"
+    },
+    "bgCountdownDim": {
+      "value": "{global.dim30}",
+      "type": "color"
+    },
     "emojiBarBg": {
       "value": "{global.white15}",
       "type": "color"
@@ -293,6 +317,10 @@
     "btnDisabledOpacity": {
       "value": "{global.opacity30}",
       "type": "opacity"
+    },
+    "btnDangerBg": {
+      "value": "{global.gray800}",
+      "type": "color"
     },
     "motionNoise": {
       "value": "{global.dur50}",
@@ -378,6 +406,10 @@
       "value": "{global.size44}",
       "type": "sizing"
     },
+    "emojiItemActiveBg": {
+      "value": "{global.white20}",
+      "type": "color"
+    },
     "tabBarH": {
       "value": "{global.size49}",
       "type": "sizing"
@@ -388,6 +420,10 @@
     },
     "iconSize": {
       "value": "{global.size20}",
+      "type": "sizing"
+    },
+    "iconSizeLarge": {
+      "value": "{global.size24}",
       "type": "sizing"
     },
     "borderWidth": {
@@ -432,6 +468,10 @@
     },
     "space4": {
       "value": "{global.sp4}",
+      "type": "spacing"
+    },
+    "space6": {
+      "value": "{global.sp6}",
       "type": "spacing"
     },
     "space8": {
