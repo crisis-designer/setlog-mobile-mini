@@ -1,7 +1,11 @@
 # Vercel by default excludes any folder literally named "node_modules" from
 # static uploads. Expo's web export hashes vector-icon font assets using
-# their original node_modules-relative path, so without this override the
-# icon fonts (Ionicons, etc.) 404 in production even though they build fine
-# locally — this is why icons render on Expo Go but disappear on the deployed
-# web build. See https://github.com/vercel/vercel/issues/10791
-!assets/node_modules/**
+# their original node_modules-relative path (which is nested TWO levels deep
+# here: assets/node_modules/expo/node_modules/@expo/vector-icons/...), so
+# both "node_modules" segments must be explicitly un-ignored. Negating just
+# the leaf files isn't enough — gitignore-style matching can't re-include
+# content whose parent directory is itself excluded, so the directory entries
+# have to be un-ignored too, not just their contents.
+# See https://github.com/vercel/vercel/issues/10791
+!**/node_modules
+!**/node_modules/**

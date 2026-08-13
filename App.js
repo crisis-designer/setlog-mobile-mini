@@ -12,6 +12,24 @@ import { useVideoPlayer, VideoView } from 'expo-video'
 import { useEventListener } from 'expo'
 import Svg, { Rect, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg'
 
+// react-native-web's Alert.alert() is a no-op (see react-native-web/src/exports/Alert),
+// so confirm/destructive dialogs silently do nothing on web. Fall back to window.confirm/alert there.
+function crossAlert(title, message, buttons) {
+  if (Platform.OS !== 'web') { Alert.alert(title, message, buttons); return }
+  if (buttons && buttons.length > 1) {
+    const confirmBtn = buttons.find(b => b.style !== 'cancel')
+    const cancelBtn = buttons.find(b => b.style === 'cancel')
+    if (window.confirm([title, message].filter(Boolean).join('\n'))) {
+      confirmBtn?.onPress?.()
+    } else {
+      cancelBtn?.onPress?.()
+    }
+  } else {
+    window.alert([title, message].filter(Boolean).join('\n'))
+    buttons?.[0]?.onPress?.()
+  }
+}
+
 // ─────────────────────────────────────────────
 // PRIMITIVE
 // ─────────────────────────────────────────────
@@ -867,7 +885,7 @@ function RootController() {
   }
 
   const handleLogout = () => {
-    Alert.alert('로그아웃', '로그아웃할까요?', [
+    crossAlert('로그아웃', '로그아웃할까요?', [
       { text:'취소', style:'cancel' },
       { text:'로그아웃', style:'destructive', onPress: () => {
         setAuthDraft({ email:'', password:'', nickname:'' })
@@ -1135,7 +1153,7 @@ function AppContent({ initialNickname, onLogout }) {
     Keyboard.dismiss()
     if (!hasCameraPermission) {
       const result = await requestPermission()
-      if (!result.granted) { Alert.alert('카메라 권한 필요', '설정에서 카메라 권한을 허용해주세요'); return }
+      if (!result.granted) { crossAlert('카메라 권한 필요', '설정에서 카메라 권한을 허용해주세요'); return }
     }
     setMe(prev => ({...prev, status:'shooting'}))
     // 카운트다운 시작은 위 useEffect가 담당 (v3.18)
@@ -1246,7 +1264,7 @@ function AppContent({ initialNickname, onLogout }) {
   }
 
   const handleDeleteFriend = (id, nickname) => {
-    Alert.alert('친구 삭제', `${nickname}을 삭제할까요?`, [
+    crossAlert('친구 삭제', `${nickname}을 삭제할까요?`, [
       {text:'취소', style:'cancel'},
       {text:'삭제', style:'destructive', onPress:()=>setFriends(prev=>prev.filter(f=>f.id!==id))},
     ])
@@ -1269,7 +1287,7 @@ function AppContent({ initialNickname, onLogout }) {
   }
 
   const handleReset = () => {
-    Alert.alert('초기화', '모든 콘텐츠를 초기화할까요?', [
+    crossAlert('초기화', '모든 콘텐츠를 초기화할까요?', [
       {text:'취소', style:'cancel'},
       {text:'초기화', style:'destructive', onPress:()=>{
         if (cameraIntervalRef.current) { clearInterval(cameraIntervalRef.current); cameraIntervalRef.current=null }
