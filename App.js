@@ -189,7 +189,7 @@ const formatTimestamp = (ts) => {
   return `${h<12?'오전':'오후'} ${h%12||12}:${m}`
 }
 
-const isVideoUri = (uri) => uri && uri.startsWith('file://')
+const isVideoUri = (uri) => uri && (uri.startsWith('file://') || uri.startsWith('blob:'))
 const isPastelColor = (uri) => uri && uri.startsWith('#')
 
 // ─────────────────────────────────────────────
@@ -1046,6 +1046,7 @@ function AppContent({ initialNickname, onLogout }) {
   const appStateRef = useRef(AppState.currentState)
   const cameraRef = useRef(null)
   const recordingPromiseRef = useRef(null)
+  const webRecorderRef = useRef(null)
   const triggerShutterRef = useRef(null)
   const shootExpand = useRef(new Animated.Value(0)).current   // v3.19: 도킹(0)↔전체화면(1)
 
@@ -1072,6 +1073,49 @@ function AppContent({ initialNickname, onLogout }) {
   const meTop = shootExpand.interpolate({ inputRange:[0,1], outputRange:[0, -safeAreaTop] })
   const meHeight = shootExpand.interpolate({ inputRange:[0,1], outputRange:[stripHeight, screenHeight] })
 
+  // expo-camera의 recordAsync/stopRecording은 웹에서 미구현 스텁이라 실제 영상이 안 나온다
+  // (record()가 즉시 { uri:'' }를 반환 → PHOTO_COLORS 색상 카드로 대체됨).
+  // 웹에서는 브라우저 MediaRecorder API로 별도 스트림을 열어 직접 3초를 녹화한다.
+  const startWebRecording = useCallback((maxDurationMs) => {
+    return new Promise((resolve, reject) => {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false })
+        .then(stream => {
+          const mimeType = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4']
+            .find(type => window.MediaRecorder?.isTypeSupported?.(type))
+          const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream)
+          const chunks = []
+          let settled = false
+          const finish = () => {
+            if (settled) return
+            settled = true
+            stream.getTracks().forEach(t => t.stop())
+            resolve({ uri: URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'video/webm' })) })
+          }
+          recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunks.push(e.data) }
+          recorder.onstop = finish
+          recorder.onerror = () => {
+            settled = true
+            stream.getTracks().forEach(t => t.stop())
+            reject(new Error('MediaRecorder error'))
+          }
+          webRecorderRef.current = recorder
+          recorder.start()
+          setTimeout(() => { if (recorder.state === 'recording') recorder.stop() }, maxDurationMs)
+        })
+        .catch(reject)
+    })
+  }, [])
+
+  const stopActiveRecording = useCallback(() => {
+    try { cameraRef.current?.stopRecording() } catch {}
+    try {
+      if (webRecorderRef.current && webRecorderRef.current.state === 'recording') {
+        webRecorderRef.current.stop()
+      }
+    } catch {}
+    webRecorderRef.current = null
+  }, [])
+
   // AppState
   useEffect(() => {
     const sub = AppState.addEventListener('change', next => {
@@ -1079,18 +1123,18 @@ function AppContent({ initialNickname, onLogout }) {
       appStateRef.current = next
       if ((next==='background'||next==='inactive') && me.status==='shooting') {
         if (cameraIntervalRef.current) { clearInterval(cameraIntervalRef.current); cameraIntervalRef.current=null }
-        try { cameraRef.current?.stopRecording() } catch {}
+        stopActiveRecording()
       }
     })
     return () => sub.remove()
-  }, [me.status])
+  }, [me.status, stopActiveRecording])
 
   useEffect(() => () => { if (cameraIntervalRef.current) clearInterval(cameraIntervalRef.current) }, [])
 
   // triggerShutter: v3.19 - 5초 타임아웃 안전장치 + 늦은 rejection 무시
   const triggerShutter = useCallback(async () => {
     if (cameraIntervalRef.current) { clearInterval(cameraIntervalRef.current); cameraIntervalRef.current=null }
-    try { cameraRef.current?.stopRecording() } catch {}
+    stopActiveRecording()
 
     let videoUri = null
     try {
@@ -1110,7 +1154,7 @@ function AppContent({ initialNickname, onLogout }) {
     setCaptionInput('')
     setCaptionHasSound(false)
     setActiveCapturing(true)
-  }, [])
+  }, [stopActiveRecording])
 
   useEffect(() => { triggerShutterRef.current = triggerShutter }, [triggerShutter])
 
@@ -1120,7 +1164,9 @@ function AppContent({ initialNickname, onLogout }) {
     setCameraCountdown(1)
 
     if (cameraRef.current && hasCameraPermission) {
-      recordingPromiseRef.current = cameraRef.current.recordAsync({ maxDuration: 3 })
+      recordingPromiseRef.current = Platform.OS === 'web'
+        ? startWebRecording(3000)
+        : cameraRef.current.recordAsync({ maxDuration: 3 })
     }
 
     let count = 1
@@ -1135,7 +1181,7 @@ function AppContent({ initialNickname, onLogout }) {
       }
     }, 1000)
     cameraIntervalRef.current = id
-  }, [hasCameraPermission])
+  }, [hasCameraPermission, startWebRecording])
 
   const handleCameraReady = useCallback(() => {
     setCameraReady(true)
@@ -1291,7 +1337,7 @@ function AppContent({ initialNickname, onLogout }) {
       {text:'취소', style:'cancel'},
       {text:'초기화', style:'destructive', onPress:()=>{
         if (cameraIntervalRef.current) { clearInterval(cameraIntervalRef.current); cameraIntervalRef.current=null }
-        try { cameraRef.current?.stopRecording() } catch {}
+        stopActiveRecording()
         setActiveCapturing(false)
         setCaptionInput('')
         setCaptionHasSound(false)
